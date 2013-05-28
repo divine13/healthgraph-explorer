@@ -10,5 +10,5 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:text="blaaah"
-            android:id="@+id/textView" android:layout_gravity="center"/>
+            android:id="@+id/authTextView" android:layout_gravity="center"/>
 </LinearLayout>
