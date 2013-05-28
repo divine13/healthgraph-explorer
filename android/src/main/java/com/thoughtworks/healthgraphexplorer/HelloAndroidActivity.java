@@ -23,13 +23,16 @@ public class HelloAndroidActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Button callUrlButton = (Button) findViewById(R.id.callUrlButton);
+        Button callUrlButton = (Button) findViewById(R.id.authorizeButton);
         callUrlButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = "healthex://auth.com/blah";
+                String url = "https://runkeeper.com/apps/authorize?client_id=d50f95fe210f45ca80e3ea8cd8c5cf6b&response_type=code&redirect_uri="
+                        + Uri.encode("healthex://auth");
                 Log.i("xxx", "url: " + url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
+                                | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 Log.i("xxx", "will start intent");
                 startActivity(intent);
             }
