@@ -2,6 +2,7 @@ package com.thoughtworks.healthgraphexplorer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -21,23 +22,6 @@ public class HelloAndroidActivity extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        Button callUrlButton = (Button) findViewById(R.id.authorizeButton);
-        callUrlButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String url = "https://runkeeper.com/apps/authorize?client_id=d50f95fe210f45ca80e3ea8cd8c5cf6b&response_type=code&redirect_uri="
-                        + Uri.encode("healthex://auth");
-                Log.i("xxx", "url: " + url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                        .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
-                                | Intent.FLAG_ACTIVITY_NO_HISTORY);
-                Log.i("xxx", "will start intent");
-                startActivity(intent);
-            }
-        });
-
     }
 
     @Override
@@ -47,6 +31,18 @@ public class HelloAndroidActivity extends Activity {
         return true;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        String token = getSharedPreferences("Auth", MODE_PRIVATE).getString("token", null);
+        Log.i("token", token);
 
+        if (token == null) {
+            Intent authIntent = new Intent(this, AuthActivity.class);
+            startActivity(authIntent);
+        } else {
+            setContentView(R.layout.activity_main);
+        }
+    }
 }
 
