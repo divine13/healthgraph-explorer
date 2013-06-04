@@ -11,6 +11,13 @@ import android.widget.Button;
 import android.widget.TextView;
 
 public class AuthActivity extends Activity {
+
+    private static final String CLIENT_ID = "d50f95fe210f45ca80e3ea8cd8c5cf6b";
+    private static final String AUTH_CALLBACK_URL = "healthex://auth";
+    private static final String AUTH_CALLBACK_CODE_QUERY_PARAM = "code";
+    private static final String AUTH_URL = "https://runkeeper.com/apps/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri="
+            + Uri.encode(AUTH_CALLBACK_URL);
+
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
@@ -20,10 +27,8 @@ public class AuthActivity extends Activity {
         callUrlButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                String url = "https://runkeeper.com/apps/authorize?client_id=d50f95fe210f45ca80e3ea8cd8c5cf6b&response_type=code&redirect_uri="
-                        + Uri.encode("healthex://auth");
-                Log.i("xxx", "url: " + url);
-                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                Log.i("xxx", "url: " + AUTH_URL);
+                Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(AUTH_URL))
                         .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP
                                 | Intent.FLAG_ACTIVITY_NO_HISTORY);
                 Log.i("xxx", "will start intent");
@@ -39,14 +44,14 @@ public class AuthActivity extends Activity {
 
         Uri uri = this.getIntent().getData();
         if (uri != null) {
-            String code = uri.getQueryParameter("code");
+            String code = uri.getQueryParameter(AUTH_CALLBACK_CODE_QUERY_PARAM);
             TextView authTextView = (TextView) findViewById(R.id.authTextView);
             authTextView
                     .setText("Thanks, this app is now authorized on your account. The code is: "
                             + code);
-            SharedPreferences.Editor editor = getSharedPreferences("Auth", MODE_PRIVATE).edit();
-            editor.putString("token", code);
             editor.commit();
+            SharedPreferences.Editor editor = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE).edit();
+            editor.putString(Constants.SHARED_PREFS_AUTH_KEY, code);
 
             Log.i("persisted token", code);
         }

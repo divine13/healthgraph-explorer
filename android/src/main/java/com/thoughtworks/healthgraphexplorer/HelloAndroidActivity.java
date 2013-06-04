@@ -27,14 +27,15 @@ public class HelloAndroidActivity extends Activity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(com.thoughtworks.healthgraphexplorer.R.menu.main, menu);
+        getMenuInflater().inflate(R.menu.main, menu);
         return true;
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        String token = getSharedPreferences("Auth", MODE_PRIVATE).getString("token", null);
+
+        String token = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE).getString(Constants.SHARED_PREFS_AUTH_KEY, null);
         Log.i("token", token);
 
         if (token == null) {
