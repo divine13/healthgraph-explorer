@@ -49,9 +49,9 @@ public class AuthActivity extends Activity {
             authTextView
                     .setText("Thanks, this app is now authorized on your account. The code is: "
                             + code);
-            editor.commit();
             SharedPreferences.Editor editor = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE).edit();
             editor.putString(Constants.SHARED_PREFS_AUTH_KEY, code);
+            editor.apply();
 
             Log.i("persisted token", code);
         }
