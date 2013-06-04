@@ -2,9 +2,12 @@ package com.thoughtworks.healthgraphexplorer;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.View;
+import android.widget.Button;
 
 public class HelloAndroidActivity extends Activity {
 
@@ -31,15 +34,28 @@ public class HelloAndroidActivity extends Activity {
     protected void onResume() {
         super.onResume();
 
-        String token = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE).getString(Constants.SHARED_PREFS_AUTH_KEY, "");
+        final SharedPreferences preferences = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE);
+        String token = preferences.getString(Constants.SHARED_PREFS_AUTH_KEY, "");
         Log.i("token", token);
 
         if (token.isEmpty()) {
-            Intent authIntent = new Intent(this, AuthActivity.class);
-            startActivity(authIntent);
+            startAuthActivity();
         } else {
             setContentView(R.layout.activity_main);
+            Button deauthButton = (Button) findViewById(R.id.deauthButton);
+            deauthButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    preferences.edit().remove(Constants.SHARED_PREFS_AUTH_KEY).apply();
+                    startAuthActivity();
+                }
+            });
         }
+    }
+
+    private void startAuthActivity() {
+        Intent authIntent = new Intent(this, AuthActivity.class);
+        startActivity(authIntent);
     }
 }
 
