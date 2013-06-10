@@ -12,8 +12,8 @@ import android.widget.TextView;
 
 public class AuthActivity extends Activity {
 
-    private static final String CLIENT_ID = "d50f95fe210f45ca80e3ea8cd8c5cf6b";
-    private static final String AUTH_CALLBACK_URL = "healthex://auth";
+    public static final String CLIENT_ID = "d50f95fe210f45ca80e3ea8cd8c5cf6b";
+    public static final String AUTH_CALLBACK_URL = "healthex://auth";
     private static final String AUTH_CALLBACK_CODE_QUERY_PARAM = "code";
     private static final String AUTH_URL = "https://runkeeper.com/apps/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri="
             + Uri.encode(AUTH_CALLBACK_URL);
