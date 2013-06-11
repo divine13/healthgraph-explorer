@@ -56,10 +56,4 @@ public class AuthActivity extends Activity {
             Log.i("persisted token", code);
         }
     }
-
-    private void disableAuthButton() {
-        Button callUrlButton = (Button) findViewById(R.id.authButton);
-        callUrlButton.setEnabled(false);
-        callUrlButton.setText("Authorized");
-    }
 }
