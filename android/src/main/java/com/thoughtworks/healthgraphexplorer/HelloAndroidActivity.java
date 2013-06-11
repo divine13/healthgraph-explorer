@@ -1,6 +1,5 @@
 package com.thoughtworks.healthgraphexplorer;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.AsyncTask;
@@ -12,7 +11,14 @@ import android.widget.Button;
 
 import com.github.kevinsawicki.http.HttpRequest;
 
-public class HelloAndroidActivity extends Activity {
+import roboguice.activity.RoboActivity;
+import roboguice.inject.InjectView;
+
+public class HelloAndroidActivity extends RoboActivity {
+
+
+    @InjectView(R.id.deauthButton)
+    private Button deauthButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,6 @@ public class HelloAndroidActivity extends Activity {
             startAuthActivity();
         } else {
             setContentView(R.layout.activity_main);
-            Button deauthButton = (Button) findViewById(R.id.deauthButton);
             deauthButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
