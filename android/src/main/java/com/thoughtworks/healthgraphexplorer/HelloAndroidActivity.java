@@ -8,17 +8,26 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.github.kevinsawicki.http.HttpRequest;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
+import static com.thoughtworks.healthgraphexplorer.Constants.BASE_URL;
+import static com.thoughtworks.healthgraphexplorer.Constants.CLIENT_ID_QUERY;
+import static com.thoughtworks.healthgraphexplorer.Constants.CLIENT_SECRET_QUERY;
+import static com.thoughtworks.healthgraphexplorer.Constants.REDIRECT_URI_QUERY;
+import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_AUTH_KEY;
+import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_NAME_AUTH;
+
 public class HelloAndroidActivity extends RoboActivity {
 
 
     @InjectView(R.id.deauthButton)
     private Button deauthButton;
+
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -35,9 +44,12 @@ public class HelloAndroidActivity extends RoboActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        Toast toast = Toast.makeText(getApplicationContext(), "Let's start!", Toast.LENGTH_SHORT);
+        toast.show();
 
-        final SharedPreferences preferences = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE);
-        final String authCode = preferences.getString(Constants.SHARED_PREFS_AUTH_KEY, "");
+
+        final SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE);
+        final String authCode = preferences.getString(SHARED_PREFS_AUTH_KEY, "");
         Log.i("token", authCode);
 
         if (authCode.isEmpty()) {
@@ -47,28 +59,34 @@ public class HelloAndroidActivity extends RoboActivity {
             deauthButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    preferences.edit().remove(Constants.SHARED_PREFS_AUTH_KEY).apply();
+                    preferences.edit().remove(SHARED_PREFS_AUTH_KEY).apply();
                     startAuthActivity();
                 }
             });
         }
 
-        AsyncTask<Void, Void, String> asyncTask = new AsyncTask<Void, Void, String>() {
+        retireveTokenTask(authCode).execute();
+
+    }
+
+    private AsyncTask<Void, Void, String> retireveTokenTask(final String authCode) {
+        return new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
-                HttpRequest response = HttpRequest.post("https://runkeeper.com/apps/token").send("grant_type=authorization_code&code=" + authCode +
-                        "&client_id=" + AuthActivity.CLIENT_ID +
-                        "&client_secret=a219ede0c6c34bd1ad351140d563e204&redirect_uri=" + AuthActivity.AUTH_CALLBACK_URL);
+                HttpRequest response = HttpRequest.post(BASE_URL + "/token")
+                        .send("grant_type=authorization_code"
+                                + "&code=" + authCode
+                                + CLIENT_ID_QUERY
+                                + CLIENT_SECRET_QUERY
+                                + REDIRECT_URI_QUERY);
 
                 String body = response.body();
                 Log.i("XX", body);
 
+
                 return body;
             }
         };
-
-        asyncTask.execute();
-
     }
 
     private void startAuthActivity() {

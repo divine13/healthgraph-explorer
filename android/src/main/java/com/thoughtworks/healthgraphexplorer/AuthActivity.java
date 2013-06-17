@@ -8,16 +8,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
+import static com.thoughtworks.healthgraphexplorer.Constants.AUTH_CALLBACK_URL;
+import static com.thoughtworks.healthgraphexplorer.Constants.BASE_URL;
+import static com.thoughtworks.healthgraphexplorer.Constants.CLIENT_ID;
+import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_AUTH_KEY;
+import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_NAME_AUTH;
+
 public class AuthActivity extends RoboActivity {
 
-    public static final String CLIENT_ID = "d50f95fe210f45ca80e3ea8cd8c5cf6b";
-    public static final String AUTH_CALLBACK_URL = "healthex://auth";
     private static final String AUTH_CALLBACK_CODE_QUERY_PARAM = "code";
-    private static final String AUTH_URL = "https://runkeeper.com/apps/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri="
+    private static final String AUTH_URL = BASE_URL + "/authorize?response_type=code&client_id=" + CLIENT_ID + "&redirect_uri="
             + Uri.encode(AUTH_CALLBACK_URL);
 
     @InjectView(R.id.authTextView)
@@ -52,14 +57,29 @@ public class AuthActivity extends RoboActivity {
         Uri uri = this.getIntent().getData();
         if (uri != null) {
             String code = uri.getQueryParameter(AUTH_CALLBACK_CODE_QUERY_PARAM);
-            authTextView
-                    .setText("Thanks, this app is now authorized on your account. The code is: "
-                            + code);
-            SharedPreferences.Editor editor = getSharedPreferences(Constants.SHARED_PREFS_NAME_AUTH, MODE_PRIVATE).edit();
-            editor.putString(Constants.SHARED_PREFS_AUTH_KEY, code);
-            editor.apply();
 
-            Log.i("persisted token", code);
+            if(code.contains("unauthorized")) {
+                showToast("App NOT Authorized!!!", Toast.LENGTH_LONG);
+                recreate();
+                return;
+            }
+
+            showToast("App Authorized! Let's start something cool!", Toast.LENGTH_SHORT);
+            saveKey(code);
+
+            Intent mainActivityIntent = new Intent(this, HelloAndroidActivity.class);
+            startActivity(mainActivityIntent);
         }
+    }
+
+    private void saveKey(String code) {
+        SharedPreferences.Editor editor = getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE).edit();
+        editor.putString(SHARED_PREFS_AUTH_KEY, code);
+        editor.apply();
+    }
+
+    private void showToast(String text, int duration) {
+        Toast toast = Toast.makeText(this, text, duration);
+        toast.show();
     }
 }
