@@ -65,11 +65,11 @@ public class HelloAndroidActivity extends RoboActivity {
             });
         }
 
-        retireveTokenTask(authCode).execute();
+        retrieveTokenTask(authCode).execute();
 
     }
 
-    private AsyncTask<Void, Void, String> retireveTokenTask(final String authCode) {
+    private AsyncTask<Void, Void, String> retrieveTokenTask(final String authCode) {
         return new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
