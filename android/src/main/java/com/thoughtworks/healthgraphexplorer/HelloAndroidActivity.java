@@ -8,9 +8,13 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.github.kevinsawicki.http.HttpRequest;
+import com.google.gson.Gson;
+
+import java.util.HashMap;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
@@ -24,10 +28,18 @@ import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_NAME_A
 
 public class HelloAndroidActivity extends RoboActivity {
 
+    public static String ACCESS_TOKEN;
+
 
     @InjectView(R.id.deauthButton)
     private Button deauthButton;
 
+    @InjectView(R.id.BoomButton)
+    private Button boomButton;
+
+    @InjectView(R.id.WeightInput)
+    private EditText weightInput;
+    private String ROOT_URL = "https://api.runkeeper.com/";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -63,9 +75,49 @@ public class HelloAndroidActivity extends RoboActivity {
                     startAuthActivity();
                 }
             });
+
+            boomButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    String weight = weightInput.getText().toString();
+
+                    new AsyncTask<Void, Void, String>(){
+                        @Override
+                        protected String doInBackground(Void... params) {
+
+                            HttpRequest request = HttpRequest
+                                    .get(ROOT_URL+ "/user")
+                                    .accept("application/vnd.com.runkeeper.User+json")
+                                    .header("Authorization", "Bearer " + ACCESS_TOKEN);
+
+                            Gson gson = new Gson();
+                            HashMap<String, String> hashMap = gson.fromJson(request.body(), HashMap.class);
+
+                            String weightEndPoint = hashMap.get("weight");
+
+                            HashMap<String, String> weightInput = new HashMap<String, String>();
+                            weightInput.put("timestamp", "Sat, 1 Jun 2013 00:00:00");
+                            weightInput.put("weight", "155");
+
+
+                            HttpRequest send = HttpRequest.post(ROOT_URL + weightEndPoint)
+                                    .contentType("application/vnd.com.runkeeper.NewWeightSet    +json")
+                                    .header("Authorization", "Bearer " + ACCESS_TOKEN)
+                                    .send(gson.toJson(weightInput));
+
+                            send.code();
+
+                            return null;
+                        }
+                    }.execute();
+
+
+                }
+            });
         }
 
         retrieveTokenTask(authCode).execute();
+
 
     }
 
@@ -73,6 +125,7 @@ public class HelloAndroidActivity extends RoboActivity {
         return new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
+
                 HttpRequest response = HttpRequest.post(BASE_URL + "/token")
                         .send("grant_type=authorization_code"
                                 + "&code=" + authCode
@@ -83,15 +136,24 @@ public class HelloAndroidActivity extends RoboActivity {
                 String body = response.body();
                 Log.i("XX", body);
 
+                AuthResponse authResponse = new Gson().fromJson(body, AuthResponse.class);
+
+                ACCESS_TOKEN = authResponse.access_token;
 
                 return body;
             }
         };
+
     }
 
     private void startAuthActivity() {
         Intent authIntent = new Intent(this, AuthActivity.class);
         startActivity(authIntent);
+    }
+
+    class AuthResponse {
+        String token_type;
+        String access_token;
     }
 }
 
