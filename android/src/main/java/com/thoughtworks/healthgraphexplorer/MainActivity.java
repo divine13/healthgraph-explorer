@@ -26,10 +26,9 @@ import static com.thoughtworks.healthgraphexplorer.Constants.REDIRECT_URI_QUERY;
 import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_AUTH_KEY;
 import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_NAME_AUTH;
 
-public class HelloAndroidActivity extends RoboActivity {
+public class MainActivity extends RoboActivity {
 
     public static String ACCESS_TOKEN;
-
 
     @InjectView(R.id.deauthButton)
     private Button deauthButton;
@@ -43,11 +42,13 @@ public class HelloAndroidActivity extends RoboActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        Log.i("xxx", "MainActivity.onCreate");
         super.onCreate(savedInstanceState);
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        Log.i("xxx", "MainActivity.onCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
@@ -55,6 +56,7 @@ public class HelloAndroidActivity extends RoboActivity {
 
     @Override
     protected void onResume() {
+        Log.i("xxx", "MainActivity.onResume");
         super.onResume();
         Toast toast = Toast.makeText(getApplicationContext(), "Let's start!", Toast.LENGTH_SHORT);
         toast.show();
@@ -81,12 +83,12 @@ public class HelloAndroidActivity extends RoboActivity {
                 public void onClick(View v) {
                     String weight = weightInput.getText().toString();
 
-                    new AsyncTask<Void, Void, String>(){
+                    new AsyncTask<Void, Void, String>() {
                         @Override
                         protected String doInBackground(Void... params) {
 
                             HttpRequest request = HttpRequest
-                                    .get(ROOT_URL+ "/user")
+                                    .get(ROOT_URL + "/user")
                                     .accept("application/vnd.com.runkeeper.User+json")
                                     .header("Authorization", "Bearer " + ACCESS_TOKEN);
 
