@@ -67,7 +67,7 @@ public class AuthActivity extends RoboActivity {
             showToast("App Authorized! Let's start something cool!", Toast.LENGTH_SHORT);
             saveKey(code);
 
-            Intent mainActivityIntent = new Intent(this, HelloAndroidActivity.class);
+            Intent mainActivityIntent = new Intent(this, MainActivity.class);
             startActivity(mainActivityIntent);
         }
     }
