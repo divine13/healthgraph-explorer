@@ -119,4 +119,8 @@ public class HgClient {
     public String getAuthCode() {
         return authCode;
     }
+
+    public String getWeightList() {
+        return "blaaaah";
+    }
 }

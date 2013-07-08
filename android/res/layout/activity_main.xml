@@ -32,7 +32,8 @@
             android:layout_below="@+id/deauthButton"
             android:layout_alignParentRight="true"
             android:rowCount="4"
-            android:columnCount="2">
+            android:columnCount="2"
+            android:id="@+id/gridLayout">
 
         <TextView
                 android:layout_width="wrap_content"
@@ -70,5 +71,14 @@
                 android:layout_column="0"
                 android:onClick="postWeight"/>
     </GridLayout>
+
+    <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="List"
+            android:id="@+id/listButton"
+            android:layout_below="@+id/gridLayout"
+            android:layout_alignLeft="@+id/gridLayout"
+            android:onClick="openList"/>
 
 </RelativeLayout>

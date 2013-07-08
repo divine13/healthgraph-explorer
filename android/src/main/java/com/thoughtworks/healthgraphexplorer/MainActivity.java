@@ -85,6 +85,10 @@ public class MainActivity extends RoboActivity {
         }.execute();
     }
 
+    public void openList(View view) {
+        startActivity(new Intent(this, WeightListActivity.class));
+    }
+
     private void startAuthActivity() {
         Intent authIntent = new Intent(this, AuthActivity.class);
         startActivity(authIntent);

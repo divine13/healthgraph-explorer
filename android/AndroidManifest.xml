@@ -32,6 +32,9 @@
             </intent-filter>
 
         </activity>
+        <activity
+                android:name=".WeightListActivity"
+                android:label="WeightList"/>
     </application>
 
 </manifest>
