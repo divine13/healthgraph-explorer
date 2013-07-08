@@ -1,49 +1,43 @@
 package com.thoughtworks.healthgraphexplorer;
 
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.github.kevinsawicki.http.HttpRequest;
-import com.google.gson.Gson;
-
-import java.util.HashMap;
+import com.thoughtworks.healthgraphexplorer.hgclient.HgClient;
+import com.thoughtworks.healthgraphexplorer.hgclient.exceptions.AccessTokenRenewalException;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
-import static com.thoughtworks.healthgraphexplorer.Constants.BASE_URL;
-import static com.thoughtworks.healthgraphexplorer.Constants.CLIENT_ID_QUERY;
-import static com.thoughtworks.healthgraphexplorer.Constants.CLIENT_SECRET_QUERY;
-import static com.thoughtworks.healthgraphexplorer.Constants.REDIRECT_URI_QUERY;
-import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_AUTH_KEY;
-import static com.thoughtworks.healthgraphexplorer.Constants.SHARED_PREFS_NAME_AUTH;
+import static com.thoughtworks.healthgraphexplorer.MyApplication.SHARED_PREFS_AUTH_KEY;
+import static com.thoughtworks.healthgraphexplorer.MyApplication.SHARED_PREFS_NAME_AUTH;
 
 public class MainActivity extends RoboActivity {
 
-    public static String ACCESS_TOKEN;
-
-    @InjectView(R.id.deauthButton)
-    private Button deauthButton;
-
-    @InjectView(R.id.BoomButton)
-    private Button boomButton;
+    private static final String CLIENT_ID = "d50f95fe210f45ca80e3ea8cd8c5cf6b";
+    private static final String CLIENT_SECRET = "a219ede0c6c34bd1ad351140d563e204";
+    private static final String REDIRECT_URI = "healthex://auth";
 
     @InjectView(R.id.WeightInput)
     private EditText weightInput;
-    private String ROOT_URL = "https://api.runkeeper.com/";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         Log.i("xxx", "MainActivity.onCreate");
         super.onCreate(savedInstanceState);
+
+        setHgClient(new HgClient(CLIENT_ID, CLIENT_SECRET, REDIRECT_URI));
+
+        String prefAuthCode = getAuthCodeFromSharedPrefs();
+        getHgClient().setAuthCode(prefAuthCode);
+
+        setContentView(R.layout.activity_main);
     }
 
     @Override
@@ -58,94 +52,37 @@ public class MainActivity extends RoboActivity {
     protected void onResume() {
         Log.i("xxx", "MainActivity.onResume");
         super.onResume();
-        Toast toast = Toast.makeText(getApplicationContext(), "Let's start!", Toast.LENGTH_SHORT);
-        toast.show();
 
-
-        final SharedPreferences preferences = getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE);
-        final String authCode = preferences.getString(SHARED_PREFS_AUTH_KEY, "");
-        Log.i("token", authCode);
-
-        if (authCode.isEmpty()) {
+        if (!getHgClient().isAuthorized()) {
             startAuthActivity();
         } else {
-            setContentView(R.layout.activity_main);
-            deauthButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    preferences.edit().remove(SHARED_PREFS_AUTH_KEY).apply();
-                    startAuthActivity();
-                }
-            });
-
-            boomButton.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-                    String weight = weightInput.getText().toString();
-
-                    new AsyncTask<Void, Void, String>() {
-                        @Override
-                        protected String doInBackground(Void... params) {
-
-                            HttpRequest request = HttpRequest
-                                    .get(ROOT_URL + "/user")
-                                    .accept("application/vnd.com.runkeeper.User+json")
-                                    .header("Authorization", "Bearer " + ACCESS_TOKEN);
-
-                            Gson gson = new Gson();
-                            HashMap<String, String> hashMap = gson.fromJson(request.body(), HashMap.class);
-
-                            String weightEndPoint = hashMap.get("weight");
-
-                            HashMap<String, String> weightInput = new HashMap<String, String>();
-                            weightInput.put("timestamp", "Sat, 1 Jun 2013 00:00:00");
-                            weightInput.put("weight", "155");
-
-
-                            HttpRequest send = HttpRequest.post(ROOT_URL + weightEndPoint)
-                                    .contentType("application/vnd.com.runkeeper.NewWeightSet    +json")
-                                    .header("Authorization", "Bearer " + ACCESS_TOKEN)
-                                    .send(gson.toJson(weightInput));
-
-                            send.code();
-
-                            return null;
-                        }
-                    }.execute();
-
-
-                }
-            });
+            Toast.makeText(getApplicationContext(), "Let's start!", Toast.LENGTH_SHORT).show();
         }
-
-        retrieveTokenTask(authCode).execute();
-
-
     }
 
-    private AsyncTask<Void, Void, String> retrieveTokenTask(final String authCode) {
-        return new AsyncTask<Void, Void, String>() {
+    public void forgetAuthCode(View view) {
+        getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE)
+                .edit().remove(SHARED_PREFS_AUTH_KEY).apply();
+        getHgClient().setAuthCode(null);
+        startAuthActivity();
+    }
+
+    public void postWeight(View view) {
+        String weightStr = weightInput.getText().toString();
+        final Double weight = Double.valueOf(weightStr);
+
+        new AsyncTask<Void, Void, Void>() {
             @Override
-            protected String doInBackground(Void... voids) {
-
-                HttpRequest response = HttpRequest.post(BASE_URL + "/token")
-                        .send("grant_type=authorization_code"
-                                + "&code=" + authCode
-                                + CLIENT_ID_QUERY
-                                + CLIENT_SECRET_QUERY
-                                + REDIRECT_URI_QUERY);
-
-                String body = response.body();
-                Log.i("XX", body);
-
-                AuthResponse authResponse = new Gson().fromJson(body, AuthResponse.class);
-
-                ACCESS_TOKEN = authResponse.access_token;
-
-                return body;
+            protected Void doInBackground(Void... params) {
+                try {
+                    getHgClient().postWeight(weight);
+                } catch (AccessTokenRenewalException e) {
+                    e.printStackTrace();
+                }
+//                Toast.makeText(getApplicationContext(), "Renewal of access token failed", Toast.LENGTH_SHORT).show();
+                return null;
             }
-        };
-
+        }.execute();
     }
 
     private void startAuthActivity() {
@@ -153,9 +90,19 @@ public class MainActivity extends RoboActivity {
         startActivity(authIntent);
     }
 
-    class AuthResponse {
-        String token_type;
-        String access_token;
+    private HgClient getHgClient() {
+        MyApplication application = (MyApplication) getApplication();
+        return application.getHgClient();
+    }
+
+    private void setHgClient(HgClient hgClient) {
+        MyApplication application = (MyApplication) getApplication();
+        application.setHgClient(hgClient);
+    }
+
+    private String getAuthCodeFromSharedPrefs() {
+        return getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE)
+                .getString(SHARED_PREFS_AUTH_KEY, null);
     }
 }
 

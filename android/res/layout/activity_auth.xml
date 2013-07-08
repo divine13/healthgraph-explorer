@@ -12,7 +12,8 @@
             android:layout_below="@+id/textView"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="14dp"
-            android:layout_gravity="center"/>
+            android:layout_gravity="center"
+            android:onClick="startAuthIntent"/>
 
     <TextView
             android:layout_width="wrap_content"
