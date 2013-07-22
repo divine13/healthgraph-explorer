@@ -1,5 +1,6 @@
 package com.thoughtworks.healthgraphexplorer;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.widget.TextView;
@@ -23,7 +24,9 @@ public class WeightListActivity extends RoboActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        textView.setText(getHgClient().getWeightList());
+        AsyncTask.execute(new Runnable() { public void run() {
+            textView.setText(getHgClient().getWeightList());
+        }});
     }
 
     @Override

@@ -121,6 +121,11 @@ public class HgClient {
     }
 
     public String getWeightList() {
+        try {
+            renewAccessToken();
+        } catch (AccessTokenRenewalException e) {
+            return "ERROR";
+        }
         return "blaaaah";
     }
 }
