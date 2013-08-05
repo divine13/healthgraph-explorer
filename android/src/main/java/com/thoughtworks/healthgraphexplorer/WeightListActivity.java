@@ -24,9 +24,19 @@ public class WeightListActivity extends RoboActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        AsyncTask.execute(new Runnable() { public void run() {
-            textView.setText(getHgClient().getWeightList());
-        }});
+
+        new AsyncTask<Void,Void,String>() {
+            @Override
+            protected String doInBackground(Void... params) {
+                return getHgClient().getWeightList();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                textView.setText(s);
+            }
+        }.execute();
     }
 
     @Override

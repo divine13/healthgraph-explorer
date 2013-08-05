@@ -124,7 +124,7 @@ public class HgClient {
         try {
             renewAccessToken();
         } catch (AccessTokenRenewalException e) {
-            return "ERROR";
+            return e.getLocalizedMessage();
         }
         return "blaaaah";
     }
