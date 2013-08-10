@@ -15,7 +15,8 @@ import com.thoughtworks.healthgraphexplorer.hgclient.exceptions.AccessTokenRenew
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
-import static com.thoughtworks.healthgraphexplorer.MyApplication.SHARED_PREFS_AUTH_KEY;
+import static com.thoughtworks.healthgraphexplorer.MyApplication.SHARED_PREFS_ACCESSTOKEN_KEY;
+import static com.thoughtworks.healthgraphexplorer.MyApplication.SHARED_PREFS_AUTHCODE_KEY;
 import static com.thoughtworks.healthgraphexplorer.MyApplication.SHARED_PREFS_NAME_AUTH;
 
 public class MainActivity extends RoboActivity {
@@ -36,6 +37,9 @@ public class MainActivity extends RoboActivity {
 
         String prefAuthCode = getAuthCodeFromSharedPrefs();
         getHgClient().setAuthCode(prefAuthCode);
+
+        String accessTokenFromSharedPrefs = getAccessTokenFromSharedPrefs();
+        getHgClient().setAccessToken(accessTokenFromSharedPrefs);
 
         setContentView(R.layout.activity_main);
     }
@@ -62,7 +66,7 @@ public class MainActivity extends RoboActivity {
 
     public void forgetAuthCode(View view) {
         getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE)
-                .edit().remove(SHARED_PREFS_AUTH_KEY).apply();
+                .edit().remove(SHARED_PREFS_AUTHCODE_KEY).apply();
         getHgClient().setAuthCode(null);
         startAuthActivity();
     }
@@ -106,7 +110,13 @@ public class MainActivity extends RoboActivity {
 
     private String getAuthCodeFromSharedPrefs() {
         return getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE)
-                .getString(SHARED_PREFS_AUTH_KEY, null);
+                .getString(SHARED_PREFS_AUTHCODE_KEY, null);
     }
+
+    private String getAccessTokenFromSharedPrefs() {
+        return getSharedPreferences(SHARED_PREFS_NAME_AUTH, MODE_PRIVATE)
+                .getString(SHARED_PREFS_ACCESSTOKEN_KEY, null);
+    }
+
 }
 

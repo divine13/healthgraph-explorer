@@ -6,6 +6,7 @@ import android.view.MenuItem;
 import android.widget.TextView;
 
 import com.thoughtworks.healthgraphexplorer.hgclient.HgClient;
+import com.thoughtworks.healthgraphexplorer.hgclient.exceptions.AccessTokenRenewalException;
 
 import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
@@ -28,7 +29,11 @@ public class WeightListActivity extends RoboActivity {
         new AsyncTask<Void,Void,String>() {
             @Override
             protected String doInBackground(Void... params) {
-                return getHgClient().getWeightList();
+                try {
+                    return getHgClient().getWeightList();
+                } catch (AccessTokenRenewalException e) {
+                    return e.getLocalizedMessage();
+                }
             }
 
             @Override

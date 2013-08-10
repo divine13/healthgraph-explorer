@@ -1,6 +1,7 @@
 package com.thoughtworks.healthgraphexplorer.hgclient;
 
 import android.net.Uri;
+import android.os.AsyncTask;
 
 import com.github.kevinsawicki.http.HttpRequest;
 import com.google.gson.Gson;
@@ -28,6 +29,11 @@ public class HgClient {
     private final String redirectUri;
 
     private String authCode;
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
     private String accessToken;
 
     public HgClient(String clientId, String clientSecret, String redirectUri) {
@@ -45,7 +51,7 @@ public class HgClient {
     }
 
     public void postWeight(Double weight) throws AccessTokenRenewalException {
-        renewAccessToken();
+        renewAccessTokenIfNeeded();
 
         String authHeader = "Bearer " + accessToken;
         HttpRequest request = HttpRequest
@@ -80,25 +86,27 @@ public class HgClient {
         }
     }
 
-    private void renewAccessToken() throws AccessTokenRenewalException {
-        HttpRequest response = HttpRequest.post(ACCESS_TOKEN_URL)
-                .send("grant_type=authorization_code"
-                        + "&code=" + authCode
-                        + "&client_id=" + clientId
-                        + "&client_secret=" + clientSecret
-                        + "&redirect_uri=" + Uri.encode(redirectUri));
+    public void renewAccessTokenIfNeeded() throws AccessTokenRenewalException {
+        if (!hasAccessToken()) {
+            HttpRequest response = HttpRequest.post(ACCESS_TOKEN_URL)
+                    .send("grant_type=authorization_code"
+                            + "&code=" + authCode
+                            + "&client_id=" + clientId
+                            + "&client_secret=" + clientSecret
+                            + "&redirect_uri=" + Uri.encode(redirectUri));
 
-        int code = response.code();
-        String body = response.body();
+            int code = response.code();
+            String body = response.body();
 
-        if (code != HttpStatus.SC_OK) {
-            throw new AccessTokenRenewalException("Response code: " + code + ", body: " + body);
+            if (code != HttpStatus.SC_OK) {
+                throw new AccessTokenRenewalException("Response code: " + code + ", body: " + body);
+            }
+
+            AccessTokenRenewalResponse accessTokenRenewalResponse =
+                    new Gson().fromJson(body, AccessTokenRenewalResponse.class);
+
+            accessToken = accessTokenRenewalResponse.getAccessToken();
         }
-
-        AccessTokenRenewalResponse accessTokenRenewalResponse =
-                new Gson().fromJson(body, AccessTokenRenewalResponse.class);
-
-        accessToken = accessTokenRenewalResponse.getAccessToken();
     }
 
     public Uri getAuthIntentUri() {
@@ -120,12 +128,17 @@ public class HgClient {
         return authCode;
     }
 
-    public String getWeightList() {
-        try {
-            renewAccessToken();
-        } catch (AccessTokenRenewalException e) {
-            return e.getLocalizedMessage();
-        }
+    public String getWeightList() throws AccessTokenRenewalException {
+        renewAccessTokenIfNeeded();
         return "blaaaah";
     }
+
+    public boolean hasAccessToken() {
+        return !Strings.isEmpty(accessToken);
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
+
 }

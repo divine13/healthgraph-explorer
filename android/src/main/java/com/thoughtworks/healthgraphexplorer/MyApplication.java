@@ -7,7 +7,8 @@ import com.thoughtworks.healthgraphexplorer.hgclient.HgClient;
 public class MyApplication extends Application {
 
     public static final String SHARED_PREFS_NAME_AUTH = "Auth";
-    public static final String SHARED_PREFS_AUTH_KEY = "token";
+    public static final String SHARED_PREFS_AUTHCODE_KEY = "authCode";
+    public static final String SHARED_PREFS_ACCESSTOKEN_KEY = "accessToken";
 
     private HgClient hgClient;
 
