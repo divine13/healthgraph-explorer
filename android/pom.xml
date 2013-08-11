@@ -11,9 +11,9 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <platform.version>4.1.1.4
-        </platform.version>
+        <platform.version>4.1.1.4</platform.version>
         <android.plugin.version>3.6.0</android.plugin.version>
+        <robospice.version>1.4.6</robospice.version>
     </properties>
 
     <dependencies>
@@ -37,6 +37,16 @@
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
             <version>2.2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>com.octo.android.robospice</groupId>
+            <artifactId>robospice</artifactId>
+            <version>${robospice.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.octo.android.robospice</groupId>
+            <artifactId>robospice-retrofit</artifactId>
+            <version>${robospice.version}</version>
         </dependency>
     </dependencies>
     <build>

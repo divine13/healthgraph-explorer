@@ -1,17 +1,20 @@
 package com.thoughtworks.healthgraphexplorer;
 
-import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.TextView;
 
-import com.thoughtworks.healthgraphexplorer.hgclient.HgClient;
-import com.thoughtworks.healthgraphexplorer.hgclient.exceptions.AccessTokenRenewalException;
+import com.octo.android.robospice.persistence.exception.SpiceException;
+import com.octo.android.robospice.request.listener.RequestListener;
+import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
+import com.thoughtworks.healthgraphexplorer.service.HealthGraphApi;
+import com.thoughtworks.healthgraphexplorer.service.model.User;
 
-import roboguice.activity.RoboActivity;
 import roboguice.inject.InjectView;
 
-public class WeightListActivity extends RoboActivity {
+public class WeightListActivity extends BaseActivity {
 
     @InjectView(R.id.WeightListTextView)
     private TextView textView;
@@ -20,28 +23,6 @@ public class WeightListActivity extends RoboActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_weightlist);
         getActionBar().setDisplayHomeAsUpEnabled(true);
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-
-        new AsyncTask<Void,Void,String>() {
-            @Override
-            protected String doInBackground(Void... params) {
-                try {
-                    return getHgClient().getWeightList();
-                } catch (AccessTokenRenewalException e) {
-                    return e.getLocalizedMessage();
-                }
-            }
-
-            @Override
-            protected void onPostExecute(String s) {
-                super.onPostExecute(s);
-                textView.setText(s);
-            }
-        }.execute();
     }
 
     @Override
@@ -54,8 +35,28 @@ public class WeightListActivity extends RoboActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private HgClient getHgClient() {
-        MyApplication application = (MyApplication) getApplication();
-        return application.getHgClient();
+    public void fetchList(View view) {
+        RetrofitSpiceRequest<User, HealthGraphApi> request =
+                new RetrofitSpiceRequest<User, HealthGraphApi>(User.class, HealthGraphApi.class) {
+                    @Override
+                    public User loadDataFromNetwork() throws Exception {
+                        return getService().user();
+                    }
+                };
+
+        RequestListener<User> requestListener = new RequestListener<User>() {
+            @Override
+            public void onRequestFailure(SpiceException spiceException) {
+                Log.d("xxx", "request failed: " + spiceException);
+            }
+
+            @Override
+            public void onRequestSuccess(User user) {
+                Log.d("xxx", "request successful: " + user);
+                textView.setText(user.toString());
+            }
+        };
+
+        this.getSpiceManager().execute(request, requestListener);
     }
 }
