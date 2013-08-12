@@ -1,8 +1,8 @@
 package com.thoughtworks.healthgraphexplorer.service;
 
 import com.thoughtworks.healthgraphexplorer.service.model.User;
+import com.thoughtworks.healthgraphexplorer.service.model.WeightSetFeed;
 
-import retrofit.client.Response;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 
@@ -18,5 +18,5 @@ public interface HealthGraphApi {
     @GET("/weight")
     @HealthGraphDynamicPath
     @Headers(ACCEPT + "application/vnd.com.runkeeper.WeightSetFeed+json")
-    Response getWeightSetFeed();
+    WeightSetFeed getWeightSetFeed();
 }

@@ -10,6 +10,7 @@ import com.octo.android.robospice.persistence.exception.SpiceException;
 import com.octo.android.robospice.request.listener.RequestListener;
 import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
 import com.thoughtworks.healthgraphexplorer.service.HealthGraphApi;
+import com.thoughtworks.healthgraphexplorer.service.model.WeightSetFeed;
 
 import org.apache.commons.io.IOUtils;
 
@@ -41,45 +42,24 @@ public class WeightListActivity extends BaseActivity {
     }
 
     public void fetchList(View view) {
-        RetrofitSpiceRequest<Response, HealthGraphApi> request =
-                new RetrofitSpiceRequest<Response, HealthGraphApi>(Response.class, HealthGraphApi.class) {
+        RetrofitSpiceRequest<WeightSetFeed, HealthGraphApi> request =
+                new RetrofitSpiceRequest<WeightSetFeed, HealthGraphApi>(WeightSetFeed.class, HealthGraphApi.class) {
                     @Override
-                    public Response loadDataFromNetwork() throws Exception {
+                    public WeightSetFeed loadDataFromNetwork() throws Exception {
                         return getService().getWeightSetFeed();
                     }
                 };
 
-        RequestListener<Response> requestListener = new RequestListener<Response>() {
+        RequestListener<WeightSetFeed> requestListener = new RequestListener<WeightSetFeed>() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.d("xxx", "request failed: " + spiceException);
             }
 
             @Override
-            public void onRequestSuccess(Response response) {
-                Log.d("xxx", "request successful: " + response.toString());
-
-                InputStream inputStream = null;
-                try {
-                    inputStream = response.getBody().in();
-                } catch (IOException e) {
-                } finally {
-                    if (inputStream != null) {
-                        try {
-                            inputStream.close();
-                        } catch (IOException e) {
-                        }
-                    }
-                }
-
-                String body = null;
-                try {
-                    body = IOUtils.toString(inputStream, "UTF-8");
-                } catch (IOException e) {
-                }
-
-                textView.setText("Header: " + response.getHeaders().toString()
-                        + "\n\nBody: " + body);
+            public void onRequestSuccess(WeightSetFeed response) {
+                Log.d("xxx", "request successful: " + response);
+                textView.setText(response.toString());
             }
         };
 
