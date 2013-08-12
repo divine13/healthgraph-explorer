@@ -3,11 +3,13 @@ package com.thoughtworks.healthgraphexplorer;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
+import android.widget.EditText;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -24,7 +26,6 @@ import java.util.Date;
 
 import retrofit.client.Response;
 import roboguice.inject.InjectView;
-import roboguice.util.SafeAsyncTask;
 
 public class MainActivity extends BaseActivity {
     private static final String SHARED_PREFS_HEALTH_GRAPH_AUTH = "HealthGraphAuth";
@@ -37,12 +38,34 @@ public class MainActivity extends BaseActivity {
     Button deauthButton;
 
     @InjectView(R.id.weightInput)
-    TextView weightInput;
+    EditText weightInput;
+
+    @InjectView(R.id.postWeightButton)
+    Button postWeightButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        weightInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                postWeightButton.setEnabled(s.length() > 0);
+            }
+        });
+
+        postWeightButton.setEnabled(false);
     }
 
     @Override
