@@ -127,6 +127,7 @@ public class MainActivity extends BaseActivity {
     }
 
     public void postWeightSet(View view) {
+        postWeightSetButton.setEnabled(false);
         final Double weight = Double.valueOf(weightInput.getText().toString());
         final Double fatPercent = Double.valueOf(fatPercentInput.getText().toString());
         String nowStr = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss").format(new Date());
@@ -148,6 +149,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.d("xxx", "request failed: " + spiceException);
+                enablePostWeightSetButton();
             }
 
             @Override
@@ -155,7 +157,13 @@ public class MainActivity extends BaseActivity {
                 Log.d("xxx", "request successful: " + response);
                 Toast.makeText(MainActivity.this, "Posted weight successfully", Toast.LENGTH_SHORT)
                         .show();
+                enablePostWeightSetButton();
             }
+
+            private void enablePostWeightSetButton() {
+                postWeightSetButton.setEnabled(true);
+            }
+
         };
 
         this.getSpiceManager().execute(request, requestListener);
