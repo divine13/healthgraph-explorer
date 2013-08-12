@@ -21,8 +21,8 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/authButton"
             android:layout_alignParentRight="true"
-            android:rowCount="6"
-            android:columnCount="2"
+            android:rowCount="8"
+            android:columnCount="1"
             android:id="@+id/gridLayout">
 
         <TextView
@@ -38,7 +38,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Weight:"
-                android:id="@+id/WeightLabel"
+                android:id="@+id/weightLabel"
                 android:layout_row="1"
                 android:layout_column="0"
                 />
@@ -51,26 +51,40 @@
                 android:layout_column="0"
                 android:numeric="integer|decimal"
                 android:inputType="numberDecimal"/>
-
-        <Button
-                style="?android:attr/buttonStyleSmall"
+        <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="@string/post_weight"
-                android:id="@+id/postWeightButton"
+                android:text="Fat percent:"
+                android:id="@+id/fatPercentLabel"
                 android:layout_row="3"
                 android:layout_column="0"
-                android:onClick="postWeight"/>
+                />
+
+        <EditText
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:id="@+id/fatPercentInput"
+                android:layout_row="4"
+                android:layout_column="0"
+                android:numeric="integer|decimal"
+                android:inputType="numberDecimal"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/post_weight_set"
+                android:id="@+id/postWeightSetButton"
+                android:layout_row="5"
+                android:layout_column="0"
+                android:onClick="postWeightSet"/>
 
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/list_weights"
                 android:id="@+id/listButton"
-                android:layout_below="@+id/gridLayout"
-                android:layout_alignLeft="@+id/gridLayout"
                 android:onClick="openList"
-                android:layout_row="4"
+                android:layout_row="6"
                 android:layout_column="0"/>
 
         <Button
@@ -79,10 +93,8 @@
                 android:text="@string/deauthorize"
                 android:id="@+id/deauthButton"
                 android:onClick="deauthorize"
-                android:layout_alignParentTop="false"
-                android:layout_centerHorizontal="true"
-                android:layout_column="0"
-                android:layout_row="5"/>
+                android:layout_row="7"
+                android:layout_column="0"/>
     </GridLayout>
 
 

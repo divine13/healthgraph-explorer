@@ -40,8 +40,11 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.weightInput)
     EditText weightInput;
 
-    @InjectView(R.id.postWeightButton)
-    Button postWeightButton;
+    @InjectView(R.id.fatPercentInput)
+    EditText fatPercentInput;
+
+    @InjectView(R.id.postWeightSetButton)
+    Button postWeightSetButton;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -61,11 +64,11 @@ public class MainActivity extends BaseActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
-                postWeightButton.setEnabled(s.length() > 0);
+                postWeightSetButton.setEnabled(s.length() > 0);
             }
         });
 
-        postWeightButton.setEnabled(false);
+        postWeightSetButton.setEnabled(false);
     }
 
     @Override
@@ -123,13 +126,14 @@ public class MainActivity extends BaseActivity {
         recreate();
     }
 
-    public void postWeight(View view) {
-        String weightStr = weightInput.getText().toString();
-        final Double weight = Double.valueOf(weightStr);
+    public void postWeightSet(View view) {
+        final Double weight = Double.valueOf(weightInput.getText().toString());
+        final Double fatPercent = Double.valueOf(fatPercentInput.getText().toString());
         String nowStr = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss").format(new Date());
 
         final WeightSet weightSet = new WeightSet(nowStr);
         weightSet.setWeight(weight);
+        weightSet.setFatPercent(fatPercent);
 
         RetrofitSpiceRequest<Response, HealthGraphApi> request =
                 new RetrofitSpiceRequest<Response, HealthGraphApi>(Response.class, HealthGraphApi.class) {
