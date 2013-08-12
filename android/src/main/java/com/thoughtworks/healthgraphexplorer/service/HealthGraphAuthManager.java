@@ -7,10 +7,10 @@ import com.github.kevinsawicki.http.HttpRequest;
 import com.google.gson.Gson;
 import com.google.gson.annotations.SerializedName;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpStatus;
 
 import retrofit.RequestInterceptor;
-import roboguice.util.SafeAsyncTask;
 import roboguice.util.Strings;
 
 public class HealthGraphAuthManager {
@@ -39,52 +39,40 @@ public class HealthGraphAuthManager {
                 + "&redirect_uri=" + Uri.encode(CALLBACK_URI));
     }
 
-    public void processAuthCallbackAndFetchAccessToken(Uri uri) {
+    public void processAuthCallback(Uri uri) {
         if (uri != null) {
             String code = uri.getQueryParameter("code");
 
             if (code != null && !code.isEmpty() && !code.contains("unauthorized")) {
                 authCode = code;
-                fetchAccessTokenAsync();
             }
         }
     }
 
-    private void fetchAccessTokenAsync() {
-        if (Strings.notEmpty(authCode)) {
-            new SafeAsyncTask<Void>() {
-                @Override
-                public Void call() throws Exception {
-                    HttpRequest response = HttpRequest.post(ACCESS_TOKEN_URL)
-                            .send("grant_type=authorization_code"
-                                    + "&code=" + authCode
-                                    + "&client_id=" + CLIENT_ID
-                                    + "&client_secret=" + CLIENT_SECRET
-                                    + "&redirect_uri=" + Uri.encode(CALLBACK_URI));
+    public void fetchAccessToken() {
+        if (StringUtils.isNotBlank(authCode)) {
+            HttpRequest response = HttpRequest.post(ACCESS_TOKEN_URL)
+                    .send("grant_type=authorization_code"
+                            + "&code=" + authCode
+                            + "&client_id=" + CLIENT_ID
+                            + "&client_secret=" + CLIENT_SECRET
+                            + "&redirect_uri=" + Uri.encode(CALLBACK_URI));
 
-                    int code = response.code();
-                    String body = response.body();
-                    Log.d("xxx", "Response code: " + code + ", body: " + body);
+            int code = response.code();
+            String body = response.body();
+            Log.d("xxx", "Response code: " + code + ", body: " + body);
 
-                    if (code == HttpStatus.SC_OK) {
-                        AccessTokenRenewalResponse accessTokenRenewalResponse =
-                                new Gson().fromJson(body, AccessTokenRenewalResponse.class);
-                        accessToken = accessTokenRenewalResponse.accessToken;
-                    } else {
-                        accessToken = null;
-                    }
+            if (code == HttpStatus.SC_OK) {
+                AccessTokenResponse accessTokenResponse =
+                        new Gson().fromJson(body, AccessTokenResponse.class);
+                accessToken = accessTokenResponse.accessToken;
+            } else {
+                accessToken = null;
+            }
 
-                    Log.d("xxx", "Got access token: " + accessToken);
-                    return null;
-                }
-
-                class AccessTokenRenewalResponse {
-                    @SerializedName("access_token")
-                    private String accessToken;
-                }
-
-            }.execute();
+            Log.d("xxx", "Got access token: " + accessToken);
         }
+
     }
 
     public RequestInterceptor getRequestInterceptor() {
@@ -109,5 +97,10 @@ public class HealthGraphAuthManager {
 
     public String getAccessToken() {
         return accessToken;
+    }
+
+    private class AccessTokenResponse {
+        @SerializedName("access_token")
+        private String accessToken;
     }
 }

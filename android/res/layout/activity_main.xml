@@ -21,7 +21,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/authButton"
             android:layout_alignParentRight="true"
-            android:rowCount="4"
+            android:rowCount="6"
             android:columnCount="2"
             android:id="@+id/gridLayout">
 
@@ -60,15 +60,29 @@
                 android:layout_row="3"
                 android:layout_column="0"
                 android:onClick="postWeight"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="List"
+                android:id="@+id/listButton"
+                android:layout_below="@+id/gridLayout"
+                android:layout_alignLeft="@+id/gridLayout"
+                android:onClick="openList"
+                android:layout_row="4"
+                android:layout_column="0"/>
+
+        <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/deauthorize"
+                android:id="@+id/deauthButton"
+                android:onClick="deauthorize"
+                android:layout_alignParentTop="false"
+                android:layout_centerHorizontal="true"
+                android:layout_column="0"
+                android:layout_row="5"/>
     </GridLayout>
 
-    <Button
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="List"
-            android:id="@+id/listButton"
-            android:layout_below="@+id/gridLayout"
-            android:layout_alignLeft="@+id/gridLayout"
-            android:onClick="openList"/>
 
 </RelativeLayout>

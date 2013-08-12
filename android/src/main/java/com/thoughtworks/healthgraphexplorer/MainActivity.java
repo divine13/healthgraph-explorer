@@ -21,6 +21,9 @@ public class MainActivity extends BaseActivity {
     @InjectView(R.id.authButton)
     Button authButton;
 
+    @InjectView(R.id.deauthButton)
+    Button deauthButton;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -36,9 +39,11 @@ public class MainActivity extends BaseActivity {
                 MODE_PRIVATE).getString(SHARED_PREFS_KEY_ACCESS_TOKEN, null);
 
         authButton.setVisibility(View.VISIBLE);
+        deauthButton.setVisibility(View.GONE);
 
         if (accessTokenAuthManager != null || accessTokenSharedPrefs != null) {
             authButton.setVisibility(View.GONE);
+            deauthButton.setVisibility(View.VISIBLE);
 
             if (accessTokenAuthManager == null) {
                 // set from shared prefs to auth manager
@@ -71,6 +76,13 @@ public class MainActivity extends BaseActivity {
         Intent intent = new Intent(Intent.ACTION_VIEW, intentUri)
                 .setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_NO_HISTORY);
         startActivity(intent);
+    }
+
+    public void deauthorize(View view) {
+        HealthGraphAuthManager.getInstance().setAccessToken(null);
+        getSharedPreferences(SHARED_PREFS_HEALTH_GRAPH_AUTH, MODE_PRIVATE).edit()
+                .putString(SHARED_PREFS_KEY_ACCESS_TOKEN, null).apply();
+        recreate();
     }
 
 }
