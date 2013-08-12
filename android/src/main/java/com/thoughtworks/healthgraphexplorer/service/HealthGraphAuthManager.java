@@ -79,8 +79,8 @@ public class HealthGraphAuthManager {
         return new RequestInterceptor() {
             @Override
             public void intercept(RequestFacade request) {
-                Log.d("xxx", "Adding Header: " + HttpRequest.HEADER_AUTHORIZATION + ": Bearer " + accessToken);
                 if (Strings.notEmpty(accessToken)) {
+                    Log.d("xxx", "Adding header '" + HttpRequest.HEADER_AUTHORIZATION + ": Bearer " + accessToken + "'");
                     request.addHeader(HttpRequest.HEADER_AUTHORIZATION, "Bearer " + accessToken);
                 }
             }

@@ -130,9 +130,8 @@ public class MainActivity extends BaseActivity {
         postWeightSetButton.setEnabled(false);
         final Double weight = Double.valueOf(weightInput.getText().toString());
         final Double fatPercent = Double.valueOf(fatPercentInput.getText().toString());
-        String nowStr = new SimpleDateFormat("EEE, d MMM yyyy HH:mm:ss").format(new Date());
 
-        final WeightSet weightSet = new WeightSet(nowStr);
+        final WeightSet weightSet = new WeightSet();
         weightSet.setWeight(weight);
         weightSet.setFatPercent(fatPercent);
 

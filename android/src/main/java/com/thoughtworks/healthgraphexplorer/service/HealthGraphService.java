@@ -2,6 +2,8 @@ package com.thoughtworks.healthgraphexplorer.service;
 
 import android.util.Log;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.octo.android.robospice.retrofit.RetrofitGsonSpiceService;
 
 import java.lang.annotation.Annotation;
@@ -13,6 +15,8 @@ import java.lang.reflect.Proxy;
 
 import retrofit.RequestInterceptor;
 import retrofit.RestAdapter;
+import retrofit.converter.Converter;
+import retrofit.converter.GsonConverter;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -38,8 +42,15 @@ public class HealthGraphService extends RetrofitGsonSpiceService {
 
     @Override
     protected RestAdapter.Builder createRestAdapterBuilder() {
-        RequestInterceptor requestInterceptor = HealthGraphAuthManager.getInstance().getRequestInterceptor();
-        return super.createRestAdapterBuilder().setRequestInterceptor(requestInterceptor);
+        Gson gson = new GsonBuilder().setDateFormat("EEE, d MMM yyyy HH:mm:ss").create();
+        Converter converter = new GsonConverter(gson);
+
+        RequestInterceptor requestInterceptor =
+                HealthGraphAuthManager.getInstance().getRequestInterceptor();
+
+        return super.createRestAdapterBuilder()
+                .setConverter(converter)
+                .setRequestInterceptor(requestInterceptor);
     }
 
     @SuppressWarnings("unchecked")
