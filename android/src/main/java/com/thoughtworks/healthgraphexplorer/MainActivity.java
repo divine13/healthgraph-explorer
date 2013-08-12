@@ -7,9 +7,11 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.GridLayout;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -21,10 +23,8 @@ import com.thoughtworks.healthgraphexplorer.service.model.WeightSet;
 
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import retrofit.client.Response;
+import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 public class MainActivity extends BaseActivity {
@@ -32,19 +32,21 @@ public class MainActivity extends BaseActivity {
     private static final String SHARED_PREFS_KEY_ACCESS_TOKEN = "AccessToken";
 
     @InjectView(R.id.authButton)
-    Button authButton;
-
-    @InjectView(R.id.deauthButton)
-    Button deauthButton;
+    private Button authButton;
 
     @InjectView(R.id.weightInput)
-    EditText weightInput;
+    private EditText weightInput;
 
     @InjectView(R.id.fatPercentInput)
-    EditText fatPercentInput;
+    private EditText fatPercentInput;
 
     @InjectView(R.id.postWeightSetButton)
-    Button postWeightSetButton;
+    private Button postWeightSetButton;
+
+    private MenuItem deauthorizeMenuItem;
+
+    @InjectView(R.id.mainGridLayout)
+    private GridLayout mainGridLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,12 +81,10 @@ public class MainActivity extends BaseActivity {
         String accessTokenSharedPrefs = getSharedPreferences(SHARED_PREFS_HEALTH_GRAPH_AUTH,
                 MODE_PRIVATE).getString(SHARED_PREFS_KEY_ACCESS_TOKEN, null);
 
-        authButton.setVisibility(View.VISIBLE);
-        deauthButton.setVisibility(View.GONE);
+        updateUiAuthorized(false);
 
         if (accessTokenAuthManager != null || accessTokenSharedPrefs != null) {
-            authButton.setVisibility(View.GONE);
-            deauthButton.setVisibility(View.VISIBLE);
+            updateUiAuthorized(true);
 
             if (accessTokenAuthManager == null) {
                 // set from shared prefs to auth manager
@@ -100,11 +100,44 @@ public class MainActivity extends BaseActivity {
         Log.d("xxx", "AccessToken: " + HealthGraphAuthManager.getInstance().getAccessToken());
     }
 
+    private void updateUiAuthorized(boolean authorized) {
+        if (authorized) {
+            authButton.setVisibility(View.GONE);
+            mainGridLayout.setVisibility(View.VISIBLE);
+            if (deauthorizeMenuItem != null) {
+                deauthorizeMenuItem.setEnabled(true);
+            }
+        } else {
+            authButton.setVisibility(View.VISIBLE);
+            mainGridLayout.setVisibility(View.GONE);
+            if (deauthorizeMenuItem != null) {
+                deauthorizeMenuItem.setEnabled(false);
+            }
+        }
+    }
+
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         return true;
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        deauthorizeMenuItem = menu.findItem(R.id.action_deauthorize);
+        return super.onPrepareOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_deauthorize:
+                deauthorize(null);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     public void openList(View view) {
