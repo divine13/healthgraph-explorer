@@ -44,7 +44,7 @@ public class MainActivity extends BaseActivity {
 
     private MenuItem deauthorizeMenuItem;
 
-    @InjectView(R.id.mainGridLayout)
+    @InjectView(R.id.postWeightLayout)
     private ViewGroup postWeightLayout;
 
     @Override
