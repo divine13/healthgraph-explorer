@@ -9,9 +9,9 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.GridLayout;
 import android.widget.Toast;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
@@ -45,7 +45,7 @@ public class MainActivity extends BaseActivity {
     private MenuItem deauthorizeMenuItem;
 
     @InjectView(R.id.mainGridLayout)
-    private GridLayout mainGridLayout;
+    private ViewGroup postWeightLayout;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -102,13 +102,13 @@ public class MainActivity extends BaseActivity {
     private void updateUiAuthorized(boolean authorized) {
         if (authorized) {
             authButton.setVisibility(View.GONE);
-            mainGridLayout.setVisibility(View.VISIBLE);
+            postWeightLayout.setVisibility(View.VISIBLE);
             if (deauthorizeMenuItem != null) {
                 deauthorizeMenuItem.setEnabled(true);
             }
         } else {
             authButton.setVisibility(View.VISIBLE);
-            mainGridLayout.setVisibility(View.GONE);
+            postWeightLayout.setVisibility(View.GONE);
             if (deauthorizeMenuItem != null) {
                 deauthorizeMenuItem.setEnabled(false);
             }

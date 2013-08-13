@@ -16,68 +16,45 @@
             android:layout_centerHorizontal="true"
             android:onClick="authorize"/>
 
-    <GridLayout
+    <LinearLayout
+            android:orientation="vertical"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/authButton"
-            android:layout_alignParentRight="true"
-            android:rowCount="8"
-            android:columnCount="1"
-            android:id="@+id/mainGridLayout">
+            android:layout_height="fill_parent"
+            android:layout_below="@id/authButton"
+            android:id="@+id/postWeightLayout">
 
         <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Weight Information"
-                android:id="@+id/FormTitle"
-                android:layout_row="0"
-                android:layout_column="0"
-                android:textStyle="bold"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Weight:"
-                android:id="@+id/weightLabel"
-                android:layout_row="1"
-                android:layout_column="0"
-                />
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Enter weight data"
+                android:id="@+id/textView"
+                android:layout_gravity="left|center_vertical"
+        android:textStyle="bold"/>
 
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/weightInput"
-                android:layout_row="2"
-                android:layout_column="0"
                 android:numeric="integer|decimal"
-                android:inputType="numberDecimal"/>
-
-        <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Fat percent:"
-                android:id="@+id/fatPercentLabel"
-                android:layout_row="3"
-                android:layout_column="0"
-                />
+                android:inputType="numberDecimal"
+                android:hint="Weight (kg)"/>
 
         <EditText
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:id="@+id/fatPercentInput"
-                android:layout_row="4"
-                android:layout_column="0"
                 android:numeric="integer|decimal"
-                android:inputType="numberDecimal"/>
+                android:inputType="numberDecimal"
+                android:hint="Body Fat (%)"/>
 
         <Button
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/post_weight_set"
                 android:id="@+id/postWeightSetButton"
-                android:layout_row="5"
-                android:layout_column="0"
-                android:onClick="postWeightSet"/>
+                android:onClick="postWeightSet"
+                android:layout_gravity="right"/>
 
         <Button
                 android:layout_width="wrap_content"
@@ -85,10 +62,8 @@
                 android:text="@string/list_weights"
                 android:id="@+id/listButton"
                 android:onClick="openList"
-                android:layout_row="6"
-                android:layout_column="0"/>
-
-    </GridLayout>
+                android:layout_gravity="right"/>
+    </LinearLayout>
 
 
 </RelativeLayout>
