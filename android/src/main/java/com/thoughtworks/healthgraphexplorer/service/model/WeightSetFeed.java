@@ -13,4 +13,8 @@ public class WeightSetFeed {
                 ", items=" + items +
                 '}';
     }
+
+    public List<WeightSet> getItems() {
+        return items;
+    }
 }

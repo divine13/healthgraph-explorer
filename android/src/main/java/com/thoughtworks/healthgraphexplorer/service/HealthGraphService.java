@@ -1,5 +1,8 @@
 package com.thoughtworks.healthgraphexplorer.service;
 
+import android.annotation.TargetApi;
+import android.app.Notification;
+import android.os.Build;
 import android.util.Log;
 
 import com.google.gson.Gson;
@@ -51,6 +54,18 @@ public class HealthGraphService extends RetrofitGsonSpiceService {
         return super.createRestAdapterBuilder()
                 .setConverter(converter)
                 .setRequestInterceptor(requestInterceptor);
+    }
+
+    // Attempt to hide notification that started popping up in Android 4.3
+    // Based on https://github.com/octo-online/robospice/issues/170
+    @TargetApi(Build.VERSION_CODES.JELLY_BEAN)
+    @Override
+    public Notification createDefaultNotification() {
+        final Notification notification = super.createDefaultNotification();
+        if (Build.VERSION.SDK_INT > Build.VERSION_CODES.JELLY_BEAN){
+            notification.priority = Notification.PRIORITY_MIN;
+        }
+        return notification;
     }
 
     @SuppressWarnings("unchecked")

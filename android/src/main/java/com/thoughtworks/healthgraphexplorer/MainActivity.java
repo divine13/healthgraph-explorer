@@ -24,7 +24,6 @@ import com.thoughtworks.healthgraphexplorer.service.model.WeightSet;
 import org.apache.commons.lang3.StringUtils;
 
 import retrofit.client.Response;
-import roboguice.inject.InjectResource;
 import roboguice.inject.InjectView;
 
 public class MainActivity extends BaseActivity {

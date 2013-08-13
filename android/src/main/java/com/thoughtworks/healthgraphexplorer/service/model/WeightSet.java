@@ -32,4 +32,16 @@ public class WeightSet {
     public void setFatPercent(Double fatPercent) {
         this.fatPercent = fatPercent;
     }
+
+    public Date getTimestamp() {
+        return timestamp;
+    }
+
+    public Double getWeight() {
+        return weight;
+    }
+
+    public Double getFatPercent() {
+        return fatPercent;
+    }
 }
