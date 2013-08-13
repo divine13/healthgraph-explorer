@@ -14,11 +14,10 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.octo.android.robospice.persistence.exception.SpiceException;
-import com.octo.android.robospice.request.listener.RequestListener;
-import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
-import com.thoughtworks.healthgraphexplorer.service.HealthGraphApi;
+import com.thoughtworks.healthgraphexplorer.service.listener.WeightSetFeedListener;
 import com.thoughtworks.healthgraphexplorer.service.model.WeightSet;
 import com.thoughtworks.healthgraphexplorer.service.model.WeightSetFeed;
+import com.thoughtworks.healthgraphexplorer.service.request.WeightSetFeedRequest;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -58,15 +57,7 @@ public class WeightListActivity extends BaseActivity {
     private void fetchList() {
         updateUiFetching(true);
 
-        RetrofitSpiceRequest<WeightSetFeed, HealthGraphApi> request =
-                new RetrofitSpiceRequest<WeightSetFeed, HealthGraphApi>(WeightSetFeed.class, HealthGraphApi.class) {
-                    @Override
-                    public WeightSetFeed loadDataFromNetwork() throws Exception {
-                        return getService().getWeightSetFeed();
-                    }
-                };
-
-        RequestListener<WeightSetFeed> requestListener = new RequestListener<WeightSetFeed>() {
+        WeightSetFeedListener listener = new WeightSetFeedListener() {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.d("xxx", "request failed: " + spiceException);
@@ -81,10 +72,9 @@ public class WeightListActivity extends BaseActivity {
                 listView.setAdapter(adapter);
                 updateUiFetching(false);
             }
-
         };
 
-        this.getSpiceManager().execute(request, requestListener);
+        this.getSpiceManager().execute(new WeightSetFeedRequest(), listener);
     }
 
     private void updateUiFetching(boolean isFetching) {
