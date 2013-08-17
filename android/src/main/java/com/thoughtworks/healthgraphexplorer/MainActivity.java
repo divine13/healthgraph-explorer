@@ -1,5 +1,6 @@
 package com.thoughtworks.healthgraphexplorer;
 
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -25,6 +27,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import retrofit.client.Response;
 import roboguice.inject.InjectView;
+import roboguice.util.Strings;
 
 public class MainActivity extends BaseActivity {
     private static final String SHARED_PREFS_HEALTH_GRAPH_AUTH = "HealthGraphAuth";
@@ -159,9 +162,20 @@ public class MainActivity extends BaseActivity {
     }
 
     public void postWeightSet(View view) {
-        postWeightSetButton.setEnabled(false);
-        final Double weight = Double.valueOf(weightInput.getText().toString());
-        final Double fatPercent = Double.valueOf(fatPercentInput.getText().toString());
+        disablePostWeightViews();
+        hideKeyboard();
+
+        Double weight = null;
+        String weightStr = weightInput.getText().toString();
+        if (Strings.notEmpty(weightStr)) {
+            weight = Double.valueOf(weightStr);
+        }
+
+        Double fatPercent = null;
+        String fatPercentStr = fatPercentInput.getText().toString();
+        if (Strings.notEmpty(fatPercentStr)) {
+            fatPercent = Double.valueOf(fatPercentStr);
+        }
 
         final WeightSet weightSet = new WeightSet();
         weightSet.setWeight(weight);
@@ -180,7 +194,7 @@ public class MainActivity extends BaseActivity {
             @Override
             public void onRequestFailure(SpiceException spiceException) {
                 Log.d("xxx", "request failed: " + spiceException);
-                enablePostWeightSetButton();
+                resetInputFields();
             }
 
             @Override
@@ -188,17 +202,30 @@ public class MainActivity extends BaseActivity {
                 Log.d("xxx", "request successful: " + response);
                 Toast.makeText(MainActivity.this, "Posted weight successfully", Toast.LENGTH_SHORT)
                         .show();
-                enablePostWeightSetButton();
+                resetInputFields();
             }
-
-            private void enablePostWeightSetButton() {
-                postWeightSetButton.setEnabled(true);
-            }
-
         };
 
         this.getSpiceManager().execute(request, requestListener);
     }
 
+    private void hideKeyboard() {
+        InputMethodManager imm = (InputMethodManager) getSystemService(
+                Context.INPUT_METHOD_SERVICE);
+        imm.hideSoftInputFromWindow(postWeightSetButton.getWindowToken(), 0);
+    }
+
+    private void disablePostWeightViews() {
+        postWeightSetButton.setEnabled(false);
+        weightInput.setEnabled(false);
+        fatPercentInput.setEnabled(false);
+    }
+
+    private void resetInputFields() {
+        weightInput.setText("");
+        weightInput.setEnabled(true);
+        fatPercentInput.setText("");
+        fatPercentInput.setEnabled(true);
+    }
 }
 
