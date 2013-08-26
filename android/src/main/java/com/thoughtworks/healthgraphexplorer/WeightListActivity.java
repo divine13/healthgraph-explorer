@@ -25,6 +25,7 @@ import com.thoughtworks.healthgraphexplorer.service.model.WeightSet;
 import com.thoughtworks.healthgraphexplorer.service.model.WeightSetFeed;
 import com.thoughtworks.healthgraphexplorer.service.request.DeleteWeightSetRequest;
 import com.thoughtworks.healthgraphexplorer.service.request.GetWeightSetFeedRequest;
+import com.thoughtworks.healthgraphexplorer.uisupport.SwipeDismissListViewTouchListener;
 
 import java.text.DateFormat;
 import java.util.List;
@@ -44,43 +45,55 @@ public class WeightListActivity extends BaseActivity {
         setContentView(R.layout.activity_weightlist);
         getActionBar().setDisplayHomeAsUpEnabled(true);
 
+        SwipeDismissListViewTouchListener touchListener =
+                new SwipeDismissListViewTouchListener(
+                        listView,
+                        new SwipeDismissListViewTouchListener.DismissCallbacks() {
+                            @Override
+                            public boolean canDismiss(int position) {
+                                return true;
+                            }
+
+                            @Override
+                            public void onDismiss(ListView listView, int[] reverseSortedPositions) {
+                                final WeightListAdapter adapter = (WeightListAdapter) listView.getAdapter();
+
+                                for (final int position : reverseSortedPositions) {
+                                    final WeightSet weightSet = (WeightSet) listView.getItemAtPosition(position);
+                                    String weightSetUri = weightSet.getUri();
+                                    String weightSetId = weightSetUri.replace("/weight/", "");
+                                    RetrofitSpiceRequest request = new DeleteWeightSetRequest(weightSetId);
+
+                                    RequestListener<Void> listener = new RequestListener<Void>() {
+                                        @Override
+                                        public void onRequestFailure(SpiceException spiceException) {
+                                            Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                                            v.vibrate(500);
+                                            Toast.makeText(WeightListActivity.this, "Delete failed", Toast.LENGTH_SHORT).show();
+                                        }
+
+                                        @Override
+                                        public void onRequestSuccess(Void _) {
+                                            Toast.makeText(WeightListActivity.this, "Delete successful", Toast.LENGTH_SHORT).show();
+                                        }
+                                    };
+
+                                    adapter.remove(adapter.getItem(position));
+                                    WeightListActivity.this.getSpiceManager().execute(request, listener);
+                                }
+                                adapter.notifyDataSetChanged();
+                            }
+                        });
+        listView.setOnTouchListener(touchListener);
+        // Setting this scroll listener is required to ensure that during ListView scrolling,
+        // we don't look for swipes.
+        listView.setOnScrollListener(touchListener.makeScrollListener());
+
+
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(final AdapterView<?> parent, final View view, int position, long id) {
-                Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                v.vibrate(500);
 
-                final WeightSet weightSet = (WeightSet) parent.getItemAtPosition(position);
-
-                String weightSetUri = ((ViewHolder) view.getTag()).weightSetUri;
-                String weightSetId = weightSetUri.replace("/weight/", "");
-
-                RetrofitSpiceRequest request = new DeleteWeightSetRequest(weightSetId);
-
-                RequestListener<Void> listener = new RequestListener<Void>() {
-                    @Override
-                    public void onRequestFailure(SpiceException spiceException) {
-                        Toast.makeText(WeightListActivity.this, "Delete failed", Toast.LENGTH_SHORT).show();
-                    }
-
-                    @Override
-                    public void onRequestSuccess(Void _) {
-                        final WeightListAdapter adapter = (WeightListAdapter) ((ListView) parent).getAdapter();
-
-                        Toast.makeText(WeightListActivity.this, "Delete successful", Toast.LENGTH_SHORT).show();
-                        view.animate().setDuration(500).alpha(0)
-                                .withEndAction(new Runnable() {
-                                    @Override
-                                    public void run() {
-                                        adapter.getWeightSets().remove(weightSet);
-                                        adapter.notifyDataSetChanged();
-                                        view.setAlpha(1);
-                                    }
-                                });
-                    }
-                };
-
-                WeightListActivity.this.getSpiceManager().execute(request, listener);
                 return false;
             }
         });
