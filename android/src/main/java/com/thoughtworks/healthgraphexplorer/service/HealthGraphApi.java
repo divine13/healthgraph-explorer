@@ -6,9 +6,11 @@ import com.thoughtworks.healthgraphexplorer.service.model.WeightSetFeed;
 
 import retrofit.client.Response;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.GET;
 import retrofit.http.Headers;
 import retrofit.http.POST;
+import retrofit.http.Path;
 
 import static com.thoughtworks.healthgraphexplorer.service.HealthGraphService.HealthGraphDynamicPath;
 
@@ -29,4 +31,8 @@ public interface HealthGraphApi {
     @HealthGraphDynamicPath
     @Headers(CONTENT_TYPE + "application/vnd.com.runkeeper.NewWeightSet+json")
     Response postWeightSet(@Body WeightSet weightSet);
+
+    @DELETE("/weight/{id}")
+    @HealthGraphDynamicPath
+    Response deleteWeightSet(@Path("id") String id);
 }

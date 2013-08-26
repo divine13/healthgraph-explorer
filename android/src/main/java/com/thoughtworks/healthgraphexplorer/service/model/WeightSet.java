@@ -44,4 +44,8 @@ public class WeightSet {
     public Double getFatPercent() {
         return fatPercent;
     }
+
+    public String getUri() {
+        return uri;
+    }
 }

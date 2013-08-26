@@ -4,8 +4,8 @@ import com.octo.android.robospice.request.retrofit.RetrofitSpiceRequest;
 import com.thoughtworks.healthgraphexplorer.service.HealthGraphApi;
 import com.thoughtworks.healthgraphexplorer.service.model.WeightSetFeed;
 
-public class WeightSetFeedRequest extends RetrofitSpiceRequest<WeightSetFeed, HealthGraphApi> {
-    public WeightSetFeedRequest() {
+public class GetWeightSetFeedRequest extends RetrofitSpiceRequest<WeightSetFeed, HealthGraphApi> {
+    public GetWeightSetFeedRequest() {
         super(WeightSetFeed.class, HealthGraphApi.class);
     }
 
