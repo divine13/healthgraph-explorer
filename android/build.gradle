@@ -1,0 +1,36 @@
+buildscript {
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath 'com.android.tools.build:gradle:0.5.+'
+    }
+}
+apply plugin: 'android'
+
+repositories {
+    mavenCentral()
+}
+
+android {
+    compileSdkVersion 18
+    buildToolsVersion "18.1.0"
+
+    defaultConfig {
+        minSdkVersion 16
+        targetSdkVersion 16
+    }
+}
+
+dependencies {
+    compile (
+        /* 'com.android.support:support-v4:18.0.0', */
+        'com.github.kevinsawicki:http-request:5.2',
+        'org.roboguice:roboguice:2.0',
+        'com.google.code.gson:gson:2.2.4',
+        'com.squareup.retrofit:retrofit:1.2.2',
+        'com.octo.android.robospice:robospice:1.4.7',
+        'com.octo.android.robospice:robospice-retrofit:1.4.7',
+        files("libs/graphview-3.1.jar"),
+    )
+}
